@@ -1,0 +1,53 @@
+The following technical specification details how to leverage the Agent Development Kit (ADK) primitives to establish and enhance the requirements for a high-density coding agent environment, prioritising architectural structures and implementation mechanisms.
+
+### ADK Implementation for Enhanced Coding Agents
+
+#### I. Multi-Agent Architecture and Delegation Primitives
+
+The system is architecturally based on a **Multi-Agent System (MAS)**. Core development tasks are handled by explicit agent roles and governed by predefined communication flows:
+
+1.  **Agent Roles:**
+    *   **Human Interaction Agent (HIA):** Functions as the root `LlmAgent` and central orchestrator, receiving initial user inputs and managing overall task flow.
+    *   **Developing Agent (DA):** A specialised `LlmAgent` operating as a sub-agent of the HIA. The DA's core purpose is focused on **code generation, execution, and project modification**.
+
+2.  **Delegation Mechanism:** HIA delegates complex development tasks to the DA via:
+    *   **LLM-Driven Delegation (Agent Transfer):** The HIA's Large Language Model (LLM) automatically generates a transfer request based on the DA's clear `description`. The transfer action is signalled via the `EventActions.transfer_to_agent` payload.
+    *   **Explicit Invocation:** The DA is wrapped as an **`AgentTool`** and included in the HIA’s `tools` list, allowing synchronous, controlled execution, where the result is returned to the HIA for summarization.
+
+#### II. Secure Code Execution and State Management
+
+The coding agent's efficacy relies on reliable, secure execution and state persistence:
+
+1.  **Code Execution Environment:** The core execution component must be the **secure ADK BuiltInCodeExecutor**.
+    *   **Security:** Execution must be **strictly sandboxed**, with the `CodeExecutor` monitoring resource usage (CPU, memory) and blocking dangerous system operations.
+    *   **Configuration:** The DA utilizes the `code_executor` parameter (accepting a `BaseCodeExecutor` subclass instance). Executors support control parameters such as `stateful` (default `False`), `error_retry_attempts` (default `2`), and customizable delimiters like `code_block_delimiters` (e.g., `('```python\n', '\n```')`) for identifying code blocks within the LLM response.
+
+2.  **Context and State Persistence:** Conversational context and transient data are managed via the persistent **SessionService**.
+    *   **Data Sharing:** Current code snippets, parameters, and execution results are shared using the **Shared Session State (`session.state`)** accessed through the `InvocationContext`.
+    *   **Automated Results:** The `LlmAgent` utilizes the **`output_key`** parameter to automatically save its final response content (e.g., newly generated code text) to a specified key within the `session.state` dictionary.
+    *   **File/Artifact Handling:** Non-textual data (e.g., log files, build reports, configuration files) must be exchanged and managed via the **Artifact Service**, ensuring versioned management and persistence. Artifact interaction occurs using methods like `tool_context.save_artifact()` and `tool_context.load_artifact()`.
+
+#### III. Iterative Development and Workflow Orchestration
+
+Complex development tasks leverage ADK's specialized workflow patterns:
+
+1.  **Iterative Refinement Pattern:** The DA is expected to execute the **Iterative Refinement Pattern**.
+2.  **Workflow Agents:** This pattern combines specialized agents like a **CodeWriterAgent** and a **CodeReviewerAgent** within a **`LoopAgent`**.
+    *   **`LoopAgent` Control:** The `LoopAgent` executes its sequence of `sub_agents` repeatedly, limited by `max_iterations`.
+    *   **Termination Signal:** The loop terminates based on acceptance criteria defined by a sub-agent (e.g., CodeReviewerAgent) returning an `Event` with the `EventActions.escalate: True` flag set, or by invoking the **`exit_loop()`** tool.
+3.  **Deterministic Pipelines:** Sequential tasks (e.g., Code Writing $\rightarrow$ Testing $\rightarrow$ Execution) use the **`SequentialAgent`** for predictable, fixed-order execution, relying on `output_key` and state sharing for inter-agent communication.
+
+#### IV. Dynamic Policy Enforcement via Callbacks (Guardrails)
+
+Agent reliability and security policies are enforced using Callbacks, which hook into the ADK execution flow:
+
+1.  **Tool Execution Policy (Pre-Validation):** The **`before_tool_callback`** hook is mandatory for policy enforcement before any tool execution.
+    *   **Mechanism:** This function receives the `tool` metadata and the LLM-generated `args` dictionary. Policy enforcement (e.g., argument validation or blocking file operations) is performed here.
+    *   **Control Flow:** Returning a custom dictionary from this hook skips the actual tool function execution and uses the returned dictionary as the result, enabling mocking or strict blocking policies.
+
+2.  **Input/Output Guardrails:** The **`before_model_callback`** hook is used to inspect and modify the `LlmRequest` before transmission to the LLM (Input Guardrail).
+    *   **Input Blocking:** The function can return an immediate `LlmResponse` object if unsafe or prohibited inputs (e.g., prompt injection attempts) are detected, skipping the cost and latency of the LLM call.
+
+***
+
+**Conceptual Analogy:** The architecture of the ADK-Powered Web IDE, especially for a coding agent, is like a highly automated **Assembly Line** for software development. The **HIA** is the factory manager taking the order; the **DA** is the specialist robotic arm that builds the code (the product). The **`LoopAgent`** manages iterative quality checks (like a QA station), ensuring the code passes tests before sending it to the next step. The **`session.state`** acts as the conveyor belt, reliably passing the latest version of the code and test results between each specialized step, while the **`before_tool_callback`** acts as the safety interlock, validating that no dangerous commands (tools) are executed before the assembly step begins.
