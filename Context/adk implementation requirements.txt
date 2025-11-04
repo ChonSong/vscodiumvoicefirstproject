@@ -48,6 +48,112 @@ Agent reliability and security policies are enforced using Callbacks, which hook
 2.  **Input/Output Guardrails:** The **`before_model_callback`** hook is used to inspect and modify the `LlmRequest` before transmission to the LLM (Input Guardrail).
     *   **Input Blocking:** The function can return an immediate `LlmResponse` object if unsafe or prohibited inputs (e.g., prompt injection attempts) are detected, skipping the cost and latency of the LLM call.
 
+#### V. Integrated Development Environment (IDE) Components
+
+The ADK-powered coding environment must provide comprehensive IDE functionality through specialized agents, delivering traditional IDE features enhanced with AI capabilities:
+
+1.  **AI-Powered Code Editor System:**
+    *   **Code Editor Agent:** Implements syntax highlighting, autocompletion, and real-time code analysis using Gemini integration for context-aware suggestions.
+    *   **Language Support:** Multi-language support (Python, JavaScript, TypeScript, Java, C++, Go, Rust) with language-specific agents for syntax validation and formatting.
+    *   **Real-time Analysis:** Live code validation through ADK callbacks with immediate error detection and correction suggestions.
+    *   **Code Formatting Agent:** Automatic style enforcement, beautification, and adherence to project-specific coding standards.
+
+2.  **Intelligent Debugging and Error Management:**
+    *   **Debug Agent:** Step-through debugging with breakpoint management, variable inspection, and call stack analysis.
+    *   **Error Detection Agent:** Proactive bug identification via static analysis, pattern recognition, and vulnerability scanning.
+    *   **Stack Trace Agent:** Intelligent error reporting with resolution suggestions and automated fix proposals.
+    *   **Performance Profiler Agent:** Runtime analysis, bottleneck identification, and optimization recommendations.
+
+3.  **Multi-Language Execution Environment:**
+    *   **Enhanced BuiltInCodeExecutor:** Extended support for multiple programming languages with secure sandboxed execution.
+    *   **Interpreter Agent:** Language-specific execution with environment management, dependency resolution, and runtime optimization.
+    *   **Compiler Agent:** Build process automation for compiled languages with error handling and optimization flags.
+    *   **Runtime Manager:** Resource monitoring (CPU, memory, disk I/O) with automatic scaling and security enforcement.
+
+4.  **Automated Build and Deployment System:**
+    *   **Build Orchestration Agent:** Manages complex build pipelines, dependency graphs, and parallel compilation processes.
+    *   **Dependency Manager Agent:** Automatic package installation, version conflict resolution, and security vulnerability scanning.
+    *   **Asset Bundler Agent:** Web asset compilation, minification, and optimization for production deployment.
+    *   **Deployment Agent:** Automated deployment to various targets (cloud, containers, edge) with rollback capabilities.
+
+5.  **Advanced Version Control Integration:**
+    *   **Git Operations Agent:** Comprehensive Git functionality including commit, branch, merge, rebase, and pull request management.
+    *   **Change Tracking Agent:** Real-time diff visualization, conflict resolution assistance, and merge strategy recommendations.
+    *   **Code Review Agent:** Automated code review with quality assessment, security analysis, and best practice enforcement.
+    *   **Branch Strategy Agent:** Intelligent branching workflows, release management, and collaborative development patterns.
+
+#### VI. Code Section Management and Navigation
+
+The system must provide advanced code organization and navigation capabilities through AI-enhanced section management:
+
+1.  **Intelligent Code Folding System:**
+    *   **Section Detection Agent:** Automatically identifies logical code sections using comment patterns, function boundaries, and semantic analysis.
+    *   **Comment-Based Sections:** Support for user-defined sections using standardized comment syntax:
+        ```
+        # ===== SECTION: Authentication Logic =====
+        # ----- SECTION: Database Operations -----
+        // ====== SECTION: API Endpoints ======
+        /* ===== SECTION: Utility Functions ===== */
+        ```
+    *   **Smart Folding Agent:** Context-aware collapsing based on current development task, hiding irrelevant code sections automatically.
+    *   **Hierarchical Structure:** Nested section support with parent-child relationships and inheritance of folding states.
+
+2.  **AI-Enhanced Navigation System:**
+    *   **Navigation Assistant Agent:** Voice-controlled section jumping with commands like "Navigate to authentication section" or "Show all database functions."
+    *   **Code Map Agent:** Visual overview of file structure with interactive section markers and dependency visualization.
+    *   **Breadcrumb Navigation:** Real-time context display showing current section hierarchy and position within the codebase.
+    *   **Section Search Agent:** Semantic search across code sections with natural language queries and intelligent filtering.
+
+3.  **Visual Code Organization:**
+    *   **Section Indicators:** Clear visual markers for collapsible sections with customizable icons and color coding.
+    *   **Outline View:** Hierarchical code structure visualization with expandable/collapsible tree navigation.
+    *   **Minimap Integration:** Code overview with section boundaries, current viewport indication, and quick navigation.
+    *   **Focus Mode:** Distraction-free coding with automatic hiding of non-relevant sections based on current task context.
+
+#### VII. Web-Based IDE Interface Architecture
+
+The IDE interface must integrate seamlessly with the existing ADK enterprise server infrastructure:
+
+1.  **Modern Editor UI Components:**
+    *   **File Explorer Integration:** ADK ArtifactService-powered project file management with real-time synchronization.
+    *   **Multi-Pane Layout:** Configurable workspace with draggable panels, split views, and customizable layouts.
+    *   **Terminal Integration:** Embedded terminal with BuiltInCodeExecutor integration and command history.
+    *   **Debug Panel:** Interactive debugging interface with variable inspection, watch expressions, and execution control.
+
+2.  **Real-Time Collaboration Features:**
+    *   **Multi-Developer Agent:** Simultaneous editing with conflict resolution, cursor tracking, and real-time synchronization.
+    *   **Code Sharing Agent:** Section-based code sharing, collaborative review sessions, and knowledge transfer.
+    *   **Voice Collaboration:** Integrated voice communication with code context sharing and verbal code explanations.
+    *   **Session Management:** Persistent collaborative sessions with automatic save, recovery, and version tracking.
+
+3.  **AI-First Development Enhancements:**
+    *   **Predictive Coding Agent:** Next-line suggestions based on project context, coding patterns, and team conventions.
+    *   **Code Generation Agent:** Natural language to code conversion with context awareness and style consistency.
+    *   **Refactoring Agent:** Intelligent code restructuring with impact analysis and automated testing.
+    *   **Documentation Agent:** Automatic comment generation, API documentation, and code explanation.
+
+#### VIII. Enterprise IDE Integration Requirements
+
+The IDE system must integrate with enterprise development workflows and tools:
+
+1.  **Team Collaboration Infrastructure:**
+    *   **Shared Workspaces:** Team-based project environments with role-based access control and permission management.
+    *   **Code Standards Enforcement:** Automated adherence to coding guidelines, style guides, and architectural patterns.
+    *   **Knowledge Base Integration:** Access to team documentation, coding standards, and best practices through the MemoryService.
+    *   **Mentoring System:** AI-powered code mentoring with personalized feedback and learning recommendations.
+
+2.  **Security and Compliance:**
+    *   **Security Scanning Agent:** Continuous vulnerability assessment with real-time alerts and remediation suggestions.
+    *   **Compliance Monitoring:** Automated checking against industry standards (OWASP, NIST) and regulatory requirements.
+    *   **Access Control:** Fine-grained permissions for code sections, project areas, and sensitive operations.
+    *   **Audit Trail:** Comprehensive logging of all code changes, access patterns, and security events.
+
+3.  **Performance and Monitoring:**
+    *   **Code Performance Analysis:** Real-time performance metrics with bottleneck identification and optimization suggestions.
+    *   **Resource Usage Monitoring:** Track development environment resource consumption with automatic scaling.
+    *   **Development Metrics:** Code quality metrics, productivity analytics, and team performance insights.
+    *   **Health Monitoring:** System health checks with proactive issue detection and resolution.
+
 ***
 
-**Conceptual Analogy:** The architecture of the ADK-Powered Web IDE, especially for a coding agent, is like a highly automated **Assembly Line** for software development. The **HIA** is the factory manager taking the order; the **DA** is the specialist robotic arm that builds the code (the product). The **`LoopAgent`** manages iterative quality checks (like a QA station), ensuring the code passes tests before sending it to the next step. The **`session.state`** acts as the conveyor belt, reliably passing the latest version of the code and test results between each specialized step, while the **`before_tool_callback`** acts as the safety interlock, validating that no dangerous commands (tools) are executed before the assembly step begins.
+**Conceptual Analogy:** The architecture of the ADK-Powered Web IDE, especially for a coding agent, is like a highly automated **Assembly Line** for software development. The **HIA** is the factory manager taking the order; the **DA** is the specialist robotic arm that builds the code (the product). The **`LoopAgent`** manages iterative quality checks (like a QA station), ensuring the code passes tests before sending it to the next step. The **`session.state`** acts as the conveyor belt, reliably passing the latest version of the code and test results between each specialized step, while the **`before_tool_callback`** acts as the safety interlock, validating that no dangerous commands (tools) are executed before the assembly step begins. The **IDE Components** function as specialized workstations along the assembly line, each with AI-powered tools that enhance traditional development capabilities - the **Code Editor Agent** acts as an intelligent workbench with adaptive tooling, the **Debug Agent** serves as a quality control station with predictive analysis, and the **Section Management System** provides an organized workspace layout that adapts to the current development task, ensuring maximum efficiency and minimal cognitive overhead.

@@ -1,0 +1,25 @@
+{
+  "enabled": true,
+  "name": "Development Process Recorder",
+  "description": "Records and documents development process changes including code modifications, build scripts, patches, and documentation updates",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "*.sh",
+      "*.md",
+      "patches/*.patch",
+      "docs/*.md",
+      "Context/*.md",
+      "Context/*.txt",
+      "build.sh",
+      "*.json",
+      "dev/*.sh",
+      "dev/*.ps1"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A file has been modified that relates to the development process or documentation. Please analyze the changes and update the development process documentation accordingly. Consider: 1) What development process or workflow was affected, 2) How this change impacts the overall development lifecycle, 3) Whether any documentation needs to be updated or created, 4) If this represents a new pattern or practice that should be documented for future reference. Please provide a summary of the development process implications and suggest any documentation updates needed."
+  }
+}

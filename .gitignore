@@ -1,19 +1,133 @@
-vscode*
-VS*/*
-VSCode*
-VSCodium*
+# ADK IDE Project - Git Ignore
+
+# Build artifacts and distributions
+build/
+dist/
+out/
+target/
+*.vsix
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+*.dmg
+*.exe
+*.msi
+*.AppImage
+*.snap
+
+# Dependencies
+node_modules/
+jspm_packages/
+bower_components/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+
+# Logs and temporary files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage and test output
+coverage/
+*.lcov
+.nyc_output/
+.coverage
+htmlcov/
+
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials/
+config.local.*
+
+# IDE and editor files
+.vscode/
+.vscode-insiders/
+.idea/
+*.iml
+*.ipr
+*.iws
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+*~
+
+# OS generated files
 .DS_Store
-*.env
-assets/
-build/linux/appimage/out
-build/linux/appimage/pkg2appimage.AppDir
-build/linux/appimage/pkg2appimage-*.AppImage
-build/linux/appimage/pkg2appimage.AppImage
-build/linux/appimage/squashfs-root
-build/linux/appimage/VSCodium
-build/windows/msi/releasedir
-build/windows/msi/Files*.wxs
-build/windows/msi/Files*.wixobj
-sourcemaps/
-stores/snapcraft/insider/*.snap
-stores/snapcraft/stable/*.snap
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Cache directories
+.cache/
+.parcel-cache/
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+*.tsbuildinfo
+
+# Package manager files
+.npm
+.yarn-integrity
+yarn.lock
+pnpm-lock.yaml
+
+# ADK specific
+adk_cache/
+session_data/
+artifacts/
+
+# Development and testing
+.pytest_cache/
+.mypy_cache/
+.tox/
+.coverage
+htmlcov/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Local development
+local/
+sandbox/
