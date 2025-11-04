@@ -66,25 +66,27 @@ For detailed architecture information, see [ADK Implementation Requirements](Con
    ```
 
 2. **Configure Environment**
+   - Note: A `.env` file already exists in the repository root with the following variables (it's private/untracked and not visible here):
+     - `GOOGLE_CLOUD_PROJECT`
+     - `GOOGLE_APPLICATION_CREDENTIALS`
+     - `GOOGLE_API_KEY`
+   - Install Python dependencies
    ```bash
-   # Set up Google API key
-   export GOOGLE_API_KEY="your-api-key-here"
-   
-   # Install Python dependencies
    pip install -r requirements.txt
-   
-   # Install Node.js dependencies
-   npm install
    ```
 
-3. **Initialize Development Environment**
+3. **Run the Service**
    ```bash
-   # Set up ADK environment
-   python setup_adk_environment.py
-   
-   # Start development server
-   npm run dev
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
    ```
+
+4. **Run the Frontend (Optional)**
+   ```bash
+   cd frontend
+   npm install
+   npm start
+   ```
+   The frontend will be available at http://localhost:3000
 
 ## Development Setup
 
@@ -126,29 +128,47 @@ develop_agent = LlmAgent(
 ## Key Features
 
 ### 🤖 Multi-Agent Development
-- Specialized agents for coding, debugging, testing, and deployment
+- **Human Interaction Agent (HIA)**: Central orchestrator with ADK LlmAgent integration
+- **Developing Agent (DA)**: Specialized code generation and modification
+- **Code Execution Agent (CEA)**: Secure sandboxed code execution
+- **Code Writer & Reviewer Agents**: Iterative refinement pattern support
+- **IDE Component Agents**: CodeEditor, Navigation, Debug, Error Detection
 - Intelligent task delegation and collaboration
 - Context-aware agent communication
 
 ### 🔒 Secure Execution Environment
-- Sandboxed code execution with resource monitoring
-- Policy enforcement through ADK callbacks
+- Sandboxed code execution with resource monitoring (CPU, memory limits)
+- Policy enforcement through ADK callbacks (before_model, before_tool, after_model, after_tool)
+- Enhanced security guardrails (PII detection, prompt injection prevention, secret detection)
 - Comprehensive audit trails and security logging
 
 ### 🧠 AI-Enhanced Code Management
-- Intelligent section folding and navigation
+- **Code Editor Agent**: Syntax highlighting, formatting, real-time analysis
+- **Navigation Agent**: File and function navigation assistance
+- **Error Detection Agent**: Proactive bug identification and vulnerability scanning
 - Context-aware code suggestions and completions
-- Automated documentation generation
+- Multi-language support (Python, JavaScript, TypeScript, Java, C++, Go, Rust)
 
-### 🔄 Iterative Workflows
-- LoopAgent for continuous improvement cycles
+### 🔄 Workflow Orchestration
+- **LoopAgent**: Iterative refinement with CodeWriterAgent and CodeReviewerAgent
+- **SequentialAgent**: Deterministic pipeline execution
+- **ParallelAgent**: Concurrent task execution
 - Automated testing and validation
 - Intelligent error handling and recovery
 
 ### 🌐 Web-Based Interface
-- Modern, responsive IDE interface
-- Real-time collaboration features
-- Voice-controlled development assistance
+- Modern React frontend with Material-UI components
+- Monaco Editor with syntax highlighting and code completion
+- Real-time WebSocket communication for agent interactions
+- Agent status monitoring and workflow visualization
+- Chat interface for agent communication
+- Dark theme optimized for development
+
+### 🛠️ Tools & Integrations
+- **Google Search Tool**: Web search capabilities for agents
+- **File Operations Tool**: Secure file read/write/list operations
+- **Session Management**: ADK SessionService integration with JWT fallback
+- **Observability**: OpenTelemetry tracing and Prometheus metrics
 
 ## Implementation Requirements
 

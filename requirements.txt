@@ -1,0 +1,25 @@
+# Core ADK and Google ecosystem
+google-adk
+google-cloud-storage
+
+# Web framework and server
+fastapi
+uvicorn
+
+# Observability and metrics
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http
+openinference-instrumentation-google-adk
+prometheus-client
+
+# Utilities
+python-dotenv
+pydantic
+psutil
+PyJWT
+httpx
+
+# Testing
+pytest
+pytest-asyncio
+

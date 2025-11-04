@@ -65,8 +65,9 @@ All VSCodium-specific components have been removed:
 ## Next Steps
 
 1. **Review Requirements**: Start with `Context/adk implementation requirements.txt`
-2. **Setup Development Environment**: Follow guides in the Context directory
-3. **Begin Implementation**: The Kiro hooks will automatically track progress
-4. **Monitor Progress**: Check generated reports in `docs/development/`
+2. **Prepare Environment**: Create a `.env` in the repo root with `GOOGLE_CLOUD_PROJECT`, `GOOGLE_APPLICATION_CREDENTIALS`, and `GOOGLE_API_KEY`
+3. **Setup Development Environment**: Follow guides in the Context directory
+4. **Begin Implementation**: The Kiro hooks will automatically track progress
+5. **Monitor Progress**: Check generated reports in `docs/development/`
 
 This streamlined structure focuses entirely on ADK IDE implementation while maintaining comprehensive documentation and automated development tracking.

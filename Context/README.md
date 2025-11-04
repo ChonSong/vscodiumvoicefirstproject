@@ -72,6 +72,16 @@ This folder contains comprehensive documentation and resources for the Google Ag
 
 ## 🚀 Quick Start
 
+### Environment Variables (.env)
+
+Note: A `.env` file already exists at the repository root (private/untracked) containing:
+
+- `GOOGLE_CLOUD_PROJECT`
+- `GOOGLE_APPLICATION_CREDENTIALS`
+- `GOOGLE_API_KEY`
+
+These variables are used by the service for Google Cloud and ADK initialization.
+
 ### For New Users
 1. Start with [ADK Comprehensive Documentation](./ADK_COMPREHENSIVE_DOCUMENTATION.md)
 2. Follow [ADK Installation & Setup Guide](./ADK_INSTALLATION_SETUP_GUIDE.md)

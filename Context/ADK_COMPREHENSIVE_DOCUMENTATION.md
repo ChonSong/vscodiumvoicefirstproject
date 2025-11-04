@@ -79,7 +79,7 @@ For tasks requiring significant time without blocking execution, the **`LongRunn
 ### 2. Built-in and Ecosystem Tools
 ADK integrates several powerful, built-in capabilities:
 *   **Google Search**: Provided via the `google_search` tool for grounding responses with real-time information.
-*   **Code Execution**: Enabled via `code_executor` and tools like **`BuiltInCodeExecutor`** or **`VertexAiCodeExecutor`**, which uses the Vertex Code Interpreter Extension for safe, sandboxed execution.
+*   **Code Execution**: Enabled via `code_executor` and tools like **`BuiltInCodeExecutor`** or **`VertexAiCodeExecutor`**. Note: these executors are located in the `google.adk.code_executors` module (not `google.adk.tools`). The built-in executor is a secure, sandboxed environment; the Vertex executor uses the Vertex Code Interpreter Extension and can be configured with a resource name to reuse an existing interpreter.
 *   **Third-Party Integration**: ADK allows seamless integration of tools from other popular frameworks like **LangChain** and **CrewAI** by wrapping them using classes like `LangchainTool`.
 *   **OpenAPI/REST**: The `OpenAPIToolset` automatically generates functional tools (`RestApiTool`) directly from an OpenAPI specification (YAML/JSON), simplifying API integration.
 

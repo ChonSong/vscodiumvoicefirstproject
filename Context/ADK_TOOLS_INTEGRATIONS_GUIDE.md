@@ -31,11 +31,13 @@ result = await runner.run("What's the latest news about AI?")
 
 ### 2. Code Execution Tools
 
+Note: Both `BuiltInCodeExecutor` and `VertexAiCodeExecutor` are defined in the `google.adk.code_executors` module, not in `google.adk.tools`. Import them from `google.adk.code_executors`.
+
 #### BuiltInCodeExecutor
-Safe, sandboxed Python code execution.
+Safe, sandboxed Python code execution. This is ADK's secure execution environment that monitors resource usage (CPU, memory) and blocks dangerous system operations. Due to current ADK limitations on combining built-in tools, it is used as the dedicated Code Execution Agent (CEA)'s sole tool.
 
 ```python
-from google.adk.tools import BuiltInCodeExecutor
+from google.adk.code_executors import BuiltInCodeExecutor
 from google.adk.agents import Agent
 
 code_executor = BuiltInCodeExecutor()
@@ -49,15 +51,16 @@ agent = Agent(
 ```
 
 #### VertexAiCodeExecutor
-Cloud-based code execution using Vertex AI Code Interpreter.
+Cloud-based code execution using the Vertex Code Interpreter Extension. Developers can optionally configure it with a resource name to load an existing interpreter extension.
 
 ```python
-from google.adk.tools import VertexAiCodeExecutor
+from google.adk.code_executors import VertexAiCodeExecutor
 
 # Requires Google Cloud setup
 code_executor = VertexAiCodeExecutor(
     project_id="your-project-id",
-    location="us-central1"
+    location="us-central1",
+    # Optional: interpreter_resource_name="projects/.../locations/.../extensions/codeInterpreter"
 )
 
 agent = Agent(
