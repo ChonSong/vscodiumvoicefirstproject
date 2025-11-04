@@ -1,0 +1,50 @@
+# ADK IDE Implementation Dependencies
+
+# Core ADK Framework
+google-adk>=1.0.0
+
+# Google Cloud Dependencies
+google-cloud-aiplatform>=1.38.0
+google-cloud-storage>=2.10.0
+google-cloud-secretmanager>=2.16.0
+google-auth>=2.23.0
+google-auth-oauthlib>=1.1.0
+
+# Web Framework and API
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+websockets>=12.0
+pydantic>=2.5.0
+
+# Database and Persistence
+sqlalchemy>=2.0.0
+alembic>=1.12.0
+redis>=5.0.0
+psycopg2-binary>=2.9.0
+
+# Security and Authentication
+cryptography>=41.0.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# Observability and Monitoring
+opentelemetry-api>=1.21.0
+opentelemetry-sdk>=1.21.0
+opentelemetry-instrumentation>=0.42b0
+prometheus-client>=0.19.0
+structlog>=23.2.0
+
+# Development and Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.12.0
+black>=23.11.0
+isort>=5.12.0
+mypy>=1.7.0
+
+# Utility Libraries
+python-dotenv>=1.0.0
+click>=8.1.0
+rich>=13.7.0
+httpx>=0.25.0
+aiofiles>=23.2.0

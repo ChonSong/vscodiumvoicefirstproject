@@ -400,7 +400,7 @@ class DevelopmentRecorder:
         """Generate markdown progress report"""
         report_file = self.docs_dir / f"PROGRESS_REPORT_{datetime.date.today().isoformat()}.md"
         
-        with open(report_file, "w") as f:
+        with open(report_file, "w", encoding='utf-8') as f:
             f.write("# ADK IDE Implementation Progress Report\n\n")
             f.write(f"**Generated**: {report['generated_at']}\n\n")
             
@@ -422,7 +422,7 @@ class DevelopmentRecorder:
             
             f.write("### Component Status\n\n")
             for component, info in status['components'].items():
-                status_emoji = {"not_started": "⏳", "in_progress": "🔄", "completed": "✅"}.get(info['status'], "❓")
+                status_emoji = {"not_started": "[PENDING]", "in_progress": "[IN_PROGRESS]", "completed": "[COMPLETED]"}.get(info['status'], "[UNKNOWN]")
                 f.write(f"- {status_emoji} **{component.replace('_', ' ').title()}**: {info['progress']}% ({info['status']})\n")
             f.write("\n")
             
