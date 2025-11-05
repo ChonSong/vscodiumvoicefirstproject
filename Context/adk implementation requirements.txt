@@ -1,4 +1,4 @@
-The following technical specification details how to leverage the Agent Development Kit (ADK) primitives to establish and enhance the requirements for a high-density coding agent environment, prioritising architectural structures and implementation mechanisms.
+ The following technical specification details how to leverage the Agent Development Kit (ADK) primitives to establish and enhance the requirements for a high-density coding agent environment, prioritising architectural structures and implementation mechanisms.
 
 ### ADK Implementation for Enhanced Coding Agents
 

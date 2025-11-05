@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import json
 from typing import Dict
@@ -10,7 +11,9 @@ from src.adk_ide.observability.tracing import initialize_tracing
 
 from src.adk_ide.agents.cea import CodeExecutionAgent
 from src.adk_ide.agents.hia import HumanInteractionAgent
+from src.adk_ide.agents.da import DevelopingAgent
 from src.adk_ide.services.session import ProductionSessionManager
+from src.adk_ide.services.artifact import ArtifactService
 from src.adk_ide.security import callbacks as sec_cb
 from src.adk_ide.websocket.handler import WebSocketManager
 
@@ -19,10 +22,23 @@ load_dotenv()
 
 app = FastAPI(title="ADK IDE Service", version="0.1.0")
 
+# Add CORS middleware to allow browser connections
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with specific origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Initialize core agents with proper delegation chain
 code_executor = CodeExecutionAgent()
-hia = HumanInteractionAgent(code_executor=code_executor)
+developing_agent = DevelopingAgent(code_executor=code_executor)
+hia = HumanInteractionAgent(code_executor=code_executor, developing_agent=developing_agent)
 session_manager = ProductionSessionManager(environment=os.environ.get("ENVIRONMENT", "development"))
-websocket_manager = WebSocketManager(hia=hia, code_executor=code_executor)
+artifact_service = ArtifactService(environment=os.environ.get("ENVIRONMENT", "development"))
+base_path = os.environ.get("PROJECT_BASE_PATH", os.getcwd())
+websocket_manager = WebSocketManager(hia=hia, code_executor=code_executor, base_path=base_path)
 
 # Initialize tracing if configured
 _trace_error = initialize_tracing(service_name="adk-ide-service")

@@ -38,6 +38,7 @@ class CodeWriterAgent(ADKIDEAgent):
                     description="Specialized agent for writing, generating, and modifying code based on requirements and specifications",
                     tools=tools if tools else None,  # type: ignore[arg-type]
                     instruction="You are a code generation specialist. Generate clean, well-documented code that follows best practices. Test your code when possible.",
+                    output_key="generated_code",  # Save generated code to session.state["generated_code"]
                 )
                 run_method = getattr(self._llm_agent, "run", None)
                 run_async_method = getattr(self._llm_agent, "run_async", None)
@@ -86,6 +87,7 @@ class CodeReviewerAgent(ADKIDEAgent):
                     name="CodeReviewerAgent",
                     description="Reviews code for quality, correctness, security, and adherence to best practices",
                     instruction="You are a code review specialist. Thoroughly review code for bugs, security issues, performance problems, and style violations. Set escalate=True if code meets acceptance criteria.",
+                    output_key="code_review_result",  # Save review results to session.state["code_review_result"]
                 )
                 run_method = getattr(self._llm_agent, "run", None)
                 run_async_method = getattr(self._llm_agent, "run_async", None)
@@ -98,7 +100,11 @@ class CodeReviewerAgent(ADKIDEAgent):
                 self._llm_agent_run = None
 
     async def run(self, request: Dict[str, Any]) -> Dict[str, Any]:
-        """Review code and determine if it meets acceptance criteria."""
+        """Review code and determine if it meets acceptance criteria.
+        
+        Returns EventActions.escalate=True when acceptance criteria are met,
+        which signals LoopAgent to terminate the iterative refinement cycle.
+        """
         if self._llm_agent is not None and self._llm_agent_run is not None:  # pragma: no cover
             try:
                 result = self._llm_agent_run(request)
@@ -109,15 +115,29 @@ class CodeReviewerAgent(ADKIDEAgent):
                 # In a real implementation, this would analyze the review result
                 meets_criteria = result.get("approved", False) if isinstance(result, dict) else False
                 
+                # Check if result already contains EventActions
+                event_actions = result.get("event_actions", {}) if isinstance(result, dict) else {}
+                
+                # Set escalate flag in EventActions if criteria are met
+                if meets_criteria:
+                    event_actions["escalate"] = True
+                
                 return {
                     "status": "success",
                     "agent": self.name,
                     "review": result,
                     "approved": meets_criteria,
-                    "escalate": meets_criteria,  # Terminate loop if approved
+                    "escalate": meets_criteria,  # Legacy flag for backward compatibility
+                    "event_actions": event_actions,  # ADK EventActions format
                 }
             except Exception as exc:
-                return {"status": "error", "agent": self.name, "error": str(exc), "escalate": False}
+                return {
+                    "status": "error",
+                    "agent": self.name,
+                    "error": str(exc),
+                    "escalate": False,
+                    "event_actions": {},
+                }
 
         # Fallback scaffold - approve after first iteration for demo
         code_to_review = request.get("code") or request.get("previous_result", {}).get("code", "")
@@ -129,5 +149,6 @@ class CodeReviewerAgent(ADKIDEAgent):
             "review": {"comments": ["Code review completed"], "approved": approved},
             "approved": approved,
             "escalate": approved,
+            "event_actions": {"escalate": approved},  # ADK EventActions format
         }
 

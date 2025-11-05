@@ -1,4 +1,4 @@
-"""IDE component agents: CodeEditor, Navigation, Debug, Error Detection."""
+"""IDE component agents: CodeEditor, Navigation, Debug, Error Detection, Performance Profiler."""
 from typing import Any, Dict, Optional, Callable, List
 import os
 import re

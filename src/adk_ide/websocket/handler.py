@@ -2,11 +2,14 @@
 from typing import Dict, Any, Optional
 import json
 import asyncio
+import shlex
 from fastapi import WebSocket, WebSocketDisconnect
 import logging
+import pathlib
 
 from ..agents.hia import HumanInteractionAgent
 from ..agents.cea import CodeExecutionAgent
+from ..tools.file_operations import FileOperationsTool
 
 logger = logging.getLogger(__name__)
 
@@ -14,9 +17,10 @@ logger = logging.getLogger(__name__)
 class WebSocketManager:
     """Manages WebSocket connections for real-time agent communication."""
 
-    def __init__(self, hia: HumanInteractionAgent, code_executor: CodeExecutionAgent):
+    def __init__(self, hia: HumanInteractionAgent, code_executor: CodeExecutionAgent, base_path: Optional[str] = None):
         self.hia = hia
         self.code_executor = code_executor
+        self.file_operations = FileOperationsTool(base_path=base_path)
         self.active_connections: list[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
@@ -104,6 +108,76 @@ class WebSocketManager:
                     "data": result,
                 }, websocket)
 
+            elif request_type == "file_explorer":
+                await self.send_personal_message({
+                    "type": "progress",
+                    "request_id": request_id,
+                    "message": "Loading directory...",
+                }, websocket)
+                
+                payload = request.get("payload", {})
+                action = payload.get("action", "list")
+                path = payload.get("path", ".")
+                
+                if action == "list":
+                    result = await self.file_operations.list_directory(path)
+                elif action == "read":
+                    file_path = payload.get("file_path", "")
+                    result = await self.file_operations.read_file(file_path)
+                else:
+                    result = {"error": f"Unknown action: {action}"}
+                
+                await self.send_personal_message({
+                    "type": "file_explorer_result",
+                    "request_id": request_id,
+                    "status": "success" if "error" not in result else "error",
+                    "data": result,
+                    "message": result.get("error"),
+                }, websocket)
+
+            elif request_type == "terminal_execute":
+                await self.send_personal_message({
+                    "type": "terminal_progress",
+                    "request_id": request_id,
+                    "message": "Executing command...",
+                }, websocket)
+                
+                payload = request.get("payload", {})
+                command = payload.get("command", "")
+                
+                # Convert command to Python code for BuiltInCodeExecutor
+                # For simple commands, wrap in Python subprocess call
+                # For Python code, execute directly
+                python_code = self._convert_command_to_python(command)
+                
+                result = await self.code_executor.run({"code": python_code})
+                
+                # Format result for terminal display
+                terminal_result = {
+                    "stdout": "",
+                    "stderr": "",
+                    "output": "",
+                    "error": "",
+                }
+                
+                if result.get("status") == "success":
+                    exec_result = result.get("result", {})
+                    if isinstance(exec_result, dict):
+                        terminal_result["stdout"] = exec_result.get("stdout", "")
+                        terminal_result["stderr"] = exec_result.get("stderr", "")
+                        terminal_result["output"] = exec_result.get("output", str(exec_result))
+                    else:
+                        terminal_result["output"] = str(exec_result)
+                else:
+                    terminal_result["error"] = result.get("error", "Execution failed")
+                
+                await self.send_personal_message({
+                    "type": "terminal_result",
+                    "request_id": request_id,
+                    "status": result.get("status", "error"),
+                    "data": terminal_result,
+                }, websocket)
+
             else:
                 await self.send_personal_message({
                     "type": "error",
@@ -144,4 +218,54 @@ class WebSocketManager:
         except Exception as exc:
             logger.error(f"WebSocket error: {exc}")
             self.disconnect(websocket)
+
+    def _convert_command_to_python(self, command: str) -> str:
+        """Convert a terminal command to Python code for BuiltInCodeExecutor.
+        
+        For shell-like commands, wrap in subprocess. For Python code, return as-is.
+        """
+        command = command.strip()
+        
+        # If it looks like Python code (contains Python keywords or is multi-line), execute directly
+        python_keywords = ["def ", "import ", "class ", "if ", "for ", "while ", "print(", "="]
+        is_python = any(keyword in command for keyword in python_keywords) or "\n" in command
+        
+        if is_python:
+            return command
+        
+        # Otherwise, treat as shell command and execute via subprocess
+        # Use shlex to safely parse the command
+        try:
+            parts = shlex.split(command)
+            cmd = parts[0] if parts else command
+            args = parts[1:] if len(parts) > 1 else []
+            
+            # Wrap in Python subprocess call
+            python_code = f"""
+import subprocess
+import sys
+try:
+    result = subprocess.run(
+        {repr(parts)},
+        capture_output=True,
+        text=True,
+        timeout=30,
+        cwd='.'
+    )
+    if result.stdout:
+        print(result.stdout, end='')
+    if result.stderr:
+        print(result.stderr, end='', file=sys.stderr)
+    sys.exit(result.returncode)
+except subprocess.TimeoutExpired:
+    print("Command timed out after 30 seconds", file=sys.stderr)
+    sys.exit(1)
+except Exception as e:
+    print(f"Error: {{e}}", file=sys.stderr)
+    sys.exit(1)
+"""
+            return python_code.strip()
+        except Exception:
+            # Fallback: try to execute as simple Python expression
+            return f"import os; os.system({repr(command)})"
 

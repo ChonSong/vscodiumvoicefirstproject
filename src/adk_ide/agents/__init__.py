@@ -11,6 +11,23 @@ from .ide_components import (
     DebugAgent,
     ErrorDetectionAgent,
 )
+from .performance_profiler import PerformanceProfilerAgent
+from .section_detection import SectionDetectionAgent
+from .smart_folding import SmartFoldingAgent
+from .navigation_assistant import NavigationAssistantAgent
+from .code_map import CodeMapAgent
+from .build_deployment import (
+    BuildOrchestrationAgent,
+    DependencyManagerAgent,
+    AssetBundlerAgent,
+    DeploymentAgent,
+    GitOperationsAgent,
+)
+from .enterprise import (
+    MultiDeveloperAgent,
+    SecurityScannerAgent,
+    ComplianceMonitorAgent,
+)
 
 __all__ = [
     "ADKIDEAgent",
@@ -27,5 +44,18 @@ __all__ = [
     "NavigationAgent",
     "DebugAgent",
     "ErrorDetectionAgent",
+    "PerformanceProfilerAgent",
+    "SectionDetectionAgent",
+    "SmartFoldingAgent",
+    "NavigationAssistantAgent",
+    "CodeMapAgent",
+    "BuildOrchestrationAgent",
+    "DependencyManagerAgent",
+    "AssetBundlerAgent",
+    "DeploymentAgent",
+    "GitOperationsAgent",
+    "MultiDeveloperAgent",
+    "SecurityScannerAgent",
+    "ComplianceMonitorAgent",
 ]
 

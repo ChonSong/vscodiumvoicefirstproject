@@ -10,6 +10,7 @@ class LoopAgent(ADKIDEAgent):
     """Iterative refinement agent using ADK LoopAgent pattern.
     
     Executes sub-agents repeatedly until termination conditions are met.
+    Supports exit_loop tool for manual termination.
     """
 
     def __init__(self, sub_agents: List[ADKIDEAgent], max_iterations: int = 5) -> None:
@@ -18,6 +19,7 @@ class LoopAgent(ADKIDEAgent):
         self.max_iterations = max_iterations
         self._adk_loop_agent: Optional[object] = None
         self._adk_loop_run: Optional[Callable[..., Any]] = None
+        self._exit_requested = False  # Flag for exit_loop tool
 
         if os.environ.get("ADK_ENABLED", "false").lower() == "true":
             try:  # pragma: no cover
@@ -41,12 +43,35 @@ class LoopAgent(ADKIDEAgent):
 
                         adk_sub_agents.append(AdapterAgent(agent))
 
+                # Add exit_loop tool for manual termination
+                tools = []
+                try:
+                    class ExitLoopTool:
+                        name = "exit_loop"
+                        description = "Manually terminate the iterative refinement loop. Use this when you want to stop the loop before reaching max_iterations or meeting acceptance criteria."
+
+                        async def __call__(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+                            # Set flag to terminate loop
+                            self._parent._exit_requested = True
+                            return {
+                                "status": "success",
+                                "message": "Loop termination requested",
+                                "exit_requested": True,
+                            }
+
+                    exit_tool = ExitLoopTool()
+                    exit_tool._parent = self  # Store reference to parent LoopAgent
+                    tools.append(exit_tool)
+                except Exception:
+                    pass
+
                 if adk_sub_agents:
                     self._adk_loop_agent = ADKLoopAgent(
                         name="LoopAgent",
                         description="Iterative refinement workflow",
                         sub_agents=adk_sub_agents,
                         max_iterations=max_iterations,
+                        tools=tools if tools else None,  # type: ignore[arg-type]
                     )
                     run_method = getattr(self._adk_loop_agent, "run", None)
                     run_async_method = getattr(self._adk_loop_agent, "run_async", None)
@@ -59,7 +84,16 @@ class LoopAgent(ADKIDEAgent):
                 self._adk_loop_run = None
 
     async def run(self, request: Dict[str, Any]) -> Dict[str, Any]:
-        """Execute loop pattern with sub-agents."""
+        """Execute loop pattern with sub-agents.
+        
+        Terminates on:
+        - EventActions.escalate=True from sub-agents
+        - exit_loop tool invocation
+        - max_iterations reached
+        """
+        # Reset exit flag
+        self._exit_requested = False
+        
         if self._adk_loop_agent is not None and self._adk_loop_run is not None:  # pragma: no cover
             try:
                 result = self._adk_loop_run(request)
@@ -74,13 +108,25 @@ class LoopAgent(ADKIDEAgent):
         current_request = request
         results = []
 
-        while iteration_count < self.max_iterations:
+        while iteration_count < self.max_iterations and not self._exit_requested:
             iteration_count += 1
             for agent in self.sub_agents:
                 result = await agent.run(current_request)
                 results.append({"iteration": iteration_count, "agent": agent.name, "result": result})
                 
-                # Check for termination signal (escalate flag)
+                # Check for termination signals
+                # 1. EventActions.escalate (ADK format)
+                event_actions = result.get("event_actions", {})
+                if isinstance(event_actions, dict) and event_actions.get("escalate") is True:
+                    return {
+                        "status": "completed",
+                        "agent": self.name,
+                        "iterations": iteration_count,
+                        "results": results,
+                        "termination_reason": "escalate_signal",
+                    }
+                
+                # 2. Legacy escalate flag (backward compatibility)
                 if result.get("escalate") is True or result.get("terminate") is True:
                     return {
                         "status": "completed",
@@ -90,15 +136,26 @@ class LoopAgent(ADKIDEAgent):
                         "termination_reason": "escalate_signal",
                     }
                 
+                # 3. exit_loop tool flag
+                if self._exit_requested:
+                    return {
+                        "status": "completed",
+                        "agent": self.name,
+                        "iterations": iteration_count,
+                        "results": results,
+                        "termination_reason": "exit_loop_tool",
+                    }
+                
                 # Update request with result for next iteration
                 current_request = {**current_request, "previous_result": result}
 
+        termination_reason = "exit_loop_tool" if self._exit_requested else "max_iterations_reached"
         return {
             "status": "completed",
             "agent": self.name,
             "iterations": iteration_count,
             "results": results,
-            "termination_reason": "max_iterations_reached",
+            "termination_reason": termination_reason,
         }
 
 
