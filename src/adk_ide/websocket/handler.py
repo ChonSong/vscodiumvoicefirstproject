@@ -61,6 +61,53 @@ class WebSocketManager:
         request_id = request.get("request_id", "unknown")
         
         try:
+            # Handle simple user messages
+            if request_type == "user_message":
+                message = request.get("message", "")
+                
+                # Send acknowledgment
+                await self.send_personal_message({
+                    "type": "status",
+                    "message": "Processing your message...",
+                }, websocket)
+                
+                # Route to HIA for processing
+                result = await self.hia.run({"message": message, "query": message})
+                
+                # Extract meaningful response from result
+                if isinstance(result, dict):
+                    # Try to extract the actual response text
+                    response_text = (
+                        result.get("response") or 
+                        result.get("llm_result", {}).get("response") if isinstance(result.get("llm_result"), dict) else None or
+                        result.get("message") or 
+                        f"Agent {result.get('agent', 'HIA')} processed: {result.get('status', 'completed')}"
+                    )
+                    
+                    # If we have a code execution result, format it specially
+                    if "llm_result" in result or "result" in result:
+                        llm_data = result.get("llm_result", result.get("result", {}))
+                        if isinstance(llm_data, dict) and ("output" in llm_data or "stdout" in llm_data):
+                            code_output = llm_data.get("output") or llm_data.get("stdout")
+                            await self.send_personal_message({
+                                "type": "code_result",
+                                "result": code_output,
+                                "agent": "Code Executor",
+                            }, websocket)
+                            return
+                else:
+                    response_text = str(result)
+                
+                # Send agent response
+                await self.send_personal_message({
+                    "type": "agent_response",
+                    "agent": "HIA",
+                    "message": response_text,
+                    "timestamp": request.get("timestamp"),
+                    "full_result": result,  # Include full result for debugging
+                }, websocket)
+                return
+            
             # Send initial acknowledgment
             await self.send_personal_message({
                 "type": "ack",

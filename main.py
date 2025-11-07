@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import os
 import json
 from typing import Dict
@@ -31,6 +33,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files directory for the web UI
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 # Initialize core agents with proper delegation chain
 code_executor = CodeExecutionAgent()
 developing_agent = DevelopingAgent(code_executor=code_executor)
@@ -59,6 +64,12 @@ async def metrics_middleware(request, call_next):
     except Exception:  # pragma: no cover
         pass
     return response
+
+
+@app.get("/")
+async def root():
+    """Serve the main web UI"""
+    return FileResponse("static/index.html")
 
 
 @app.get("/health")
