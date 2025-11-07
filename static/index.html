@@ -256,17 +256,36 @@
                 </li>
             </ul>
 
-            <h2 style="margin-top: 30px;">Repository Info</h2>
+            <h2 style="margin-top: 20px;">Repository</h2>
             <div class="agent-item">
                 <div class="agent-name">Project</div>
                 <div class="agent-status" id="repoPath">/workspaces/vscodiumvoicefirstproject</div>
             </div>
+
+            <h2 style="margin-top: 20px;">Files</h2>
+            <div id="fileListContainer" style="margin-top:10px;">
+                <ul id="fileList" style="list-style:none;padding-left:0"></ul>
+            </div>
+            <div style="margin-top:12px;">
+                <button id="refreshFiles" style="width:100%;padding:8px">Refresh Files</button>
+            </div>
         </div>
 
         <div class="chat-container">
-            <div class="messages" id="messages">
+            <div id="editorArea" style="display:flex;flex-direction:column;height:60%;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:#252526;border-bottom:1px solid #3e3e42;">
+                    <div style="color:#cccccc;font-size:14px">Editor</div>
+                    <div style="display:flex;gap:8px;">
+                        <button id="openButton" disabled>Open</button>
+                        <button id="saveButton" disabled>Save</button>
+                    </div>
+                </div>
+                <div id="editor" style="flex:1;min-height:300px;"></div>
+            </div>
+
+            <div class="messages" id="messages" style="height:40%;">
                 <div class="message system">
-                    Welcome to ADK IDE! Connect to start a bidirectional conversation with AI agents that can access your repository.
+                    Welcome to ADK IDE! Connect to start a bidirectional conversation with AI agents that can access your repository. Use the file list on the left to open files into the editor.
                 </div>
             </div>
 
@@ -285,6 +304,8 @@
         </div>
     </div>
 
+    <!-- Monaco loader -->
+    <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
     <script src="/static/chat.js"></script>
 </body>
 </html>
