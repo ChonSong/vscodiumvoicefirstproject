@@ -1,0 +1,33 @@
+{
+  "name": "adk-extension",
+  "version": "1.0.0",
+  "description": "ADK IDE Extension for Theia (Node18)",
+  "license": "MIT",
+  "dependencies": {
+    "@theia/core": "1.44.0",
+    "@theia/filesystem": "1.44.0",
+    "@theia/workspace": "1.44.0",
+    "inversify": "6.0.1",
+    "reflect-metadata": "0.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.0",
+    "rimraf": "^5.0.5",
+    "typescript": "~5.0.4"
+  },
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build",
+    "clean": "rimraf lib *.tsbuildinfo",
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "files": [
+    "lib",
+    "src"
+  ],
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/adk-extension-frontend-module"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "private": true,
+  "name": "theia-browser-18",
+  "version": "1.0.0",
+  "description": "Theia browser application (Node 18, Theia 1.44.0)",
+  "dependencies": {
+    "@theia/core": "1.44.0",
+    "@theia/filesystem": "1.44.0",
+    "@theia/monaco": "1.44.0",
+    "@theia/navigator": "1.44.0",
+    "@theia/terminal": "1.44.0",
+    "@theia/workspace": "1.44.0",
+    "reflect-metadata": "0.2.2",
+    "inversify": "6.0.1",
+    "adk-extension": "file:./adk-extension"
+  },
+  "devDependencies": {
+    "@theia/cli": "1.44.0"
+  },
+  "scripts": {
+    "prepare": "theia build --app-target browser --mode development",
+    "build": "theia build --app-target browser",
+    "start": "theia start --hostname 0.0.0.0 --port 3000",
+    "watch": "theia build --app-target browser --watch --mode development",
+    "clean": "theia clean"
+  },
+  "theia": {
+    "frontend": {
+      "config": {
+        "applicationName": "ADK IDE (Node18)",
+        "preferences": {
+          "files.enableTrash": false
+        }
+      }
+    },
+    "backend": {
+      "config": {
+        "startupTimeout": -1,
+        "resolveSystemPlugins": false
+      }
+    }
+  }
+}
