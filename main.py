@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, WebSocket
+from fastapi import FastAPI, HTTPException, WebSocket, Request
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import json
@@ -6,6 +6,7 @@ from typing import Dict
 import time
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest, Counter, Histogram
 from fastapi.responses import Response
+import httpx
 from dotenv import load_dotenv
 from src.adk_ide.observability.tracing import initialize_tracing
 
@@ -158,4 +159,22 @@ async def metrics() -> Response:
 async def websocket_endpoint(websocket: WebSocket):
     """WebSocket endpoint for real-time agent interactions."""
     await websocket_manager.websocket_endpoint(websocket)
+
+
+@app.get("/proxy/schemastore/{path:path}")
+async def proxy_schemastore(path: str, request: Request) -> Response:
+    """Proxy requests to schemastore.org to avoid browser CORS.
+    Example: /proxy/schemastore/api/json/catalog.json
+    """
+    target_url = f"https://schemastore.org/{path}"
+    try:
+        async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
+            resp = await client.get(target_url)
+            headers = {"Content-Type": resp.headers.get("content-type", "application/json")}
+            # Optional caching to be polite to the upstream
+            cache_control = resp.headers.get("cache-control") or "public, max-age=3600"
+            headers["Cache-Control"] = cache_control
+            return Response(content=resp.content, media_type=headers["Content-Type"], status_code=resp.status_code, headers=headers)
+    except Exception as e:
+        return Response(content=str(e).encode(), media_type="text/plain", status_code=502)
 
