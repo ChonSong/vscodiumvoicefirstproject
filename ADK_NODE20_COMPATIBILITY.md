@@ -120,3 +120,4 @@ node -v  # Should show v20.x.x
 **Conclusion**: ADK is fully compatible with Node 20. The Python backend doesn't use Node.js, and the Theia extension works with whatever Node version Theia uses (Node 20).
 
 
+
