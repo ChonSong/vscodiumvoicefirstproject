@@ -182,3 +182,5 @@ Expected: JSON response with schema catalog
 
 **Status**: ✅ Settings file created. Configuration depends on whether you want to enable schema downloads or disable them to avoid CORS.
 
+
+

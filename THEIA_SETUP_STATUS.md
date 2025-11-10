@@ -1,119 +1,156 @@
-# Theia Frontend Setup Status
+# Theia Setup Status - Port 3000
 
-**Date**: 2025-11-05  
-**Status**: ⚠️ **Compilation Errors - Needs Resolution**
+## Current Status
 
----
+### Installation Progress
+- ⏳ **Dependencies**: Installing (npm install in progress)
+- ⏳ **Build**: Will rebuild after dependencies are installed
+- ⏳ **Port 3000**: Will be available after setup completes
 
-## ✅ Completed Steps
+## Setup Process
 
-1. ✅ **React Frontend Removed** - All React files deleted
-2. ✅ **Yarn Installed** - Version 1.22.22
-3. ✅ **Dependencies Installed** - `yarn install` completed
-   - Optional native module errors (native-keymap, cpu-features) can be ignored
-   - These require Python for native compilation but are optional
+### Step 1: Install Dependencies ✅
+```powershell
+cd theia-fresh\examples\browser
+npm.cmd install
+```
+**Status**: Running (takes 5-10 minutes)
 
----
+### Step 2: Clean Build ⏳
+```powershell
+npm.cmd run clean
+```
+**Status**: Waiting for Step 1 to complete
 
-## ⚠️ Current Issues
+### Step 3: Rebuild ⏳
+```powershell
+npm.cmd run rebuild
+```
+**Status**: Waiting for Step 1 to complete
 
-### Compilation Errors
+### Step 4: Start Theia ⏳
+```powershell
+npm.cmd run start:watch
+```
+**Status**: Will start after Steps 1-3 complete
 
-The build is failing with TypeScript errors:
+## Quick Start Script
 
-1. **Missing Module Errors**:
-   - `Cannot find module '@theia/core/shared/@theia/application-package/lib/environment'`
-   - Affects: `@theia/filesystem`, `@theia/editor`, `@theia/monaco`, `@theia/mini-browser`
+Run the complete setup script:
+```powershell
+.\install-and-rebuild-theia.ps1
+```
 
-2. **Type Incompatibility Errors**:
-   - Express type conflicts in `@theia/filesystem`
-   - Multiple type definition versions causing conflicts
+This script will:
+1. ✅ Install all dependencies
+2. ✅ Clean previous build
+3. ✅ Rebuild with native module stubs
+4. ✅ Verify build is ready
+5. ✅ Provide next steps
 
-### Root Cause
+## Manual Steps
 
-These errors suggest:
-- Missing or incomplete dependencies
-- TypeScript path resolution issues
-- Potential version conflicts in the monorepo
+If you prefer to run steps manually:
 
----
+### 1. Install Dependencies
+```powershell
+cd theia-fresh\examples\browser
+npm.cmd install
+```
+**Time**: 5-10 minutes
 
-## 🔧 Recommended Solutions
+### 2. Clean Build
+```powershell
+npm.cmd run clean
+```
+**Time**: ~30 seconds
 
-### Option 1: Fix Build Issues
+### 3. Rebuild
+```powershell
+npm.cmd run rebuild
+```
+**Time**: 2-5 minutes
 
-1. **Clean and Reinstall**:
+### 4. Start Theia
+```powershell
+npm.cmd run start:watch
+```
+**Time**: 1-2 minutes to start
+
+## Verification
+
+### Check if Dependencies are Installed
+```powershell
+cd theia-fresh\examples\browser
+Test-Path "node_modules"
+```
+
+### Check if Build Exists
+```powershell
+Test-Path "lib\backend\main.js"
+Test-Path "lib\frontend"
+```
+
+### Check Port 3000
+```powershell
+netstat -ano | findstr :3000
+```
+
+## Expected Results
+
+After setup completes:
+- ✅ Dependencies installed in `node_modules/`
+- ✅ Build files in `lib/backend/` and `lib/frontend/`
+- ✅ Theia ready to start on port 3000
+- ✅ Native module issues resolved (drivelist stubbed)
+
+## Troubleshooting
+
+### Issue: npm install takes too long
+**Solution**: This is normal. Theia has many dependencies. Wait for it to complete.
+
+### Issue: Native module errors
+**Solution**: The webpack config already has stubs for native modules. Rebuild should resolve this.
+
+### Issue: Port 3000 still not working
+**Solution**: 
+1. Verify dependencies are installed: `Test-Path "node_modules"`
+2. Verify build exists: `Test-Path "lib"`
+3. Try starting manually: `npm.cmd run start`
+
+### Issue: Build errors
+**Solution**: 
+1. Clean and rebuild: `npm.cmd run clean && npm.cmd run rebuild`
+2. Check for error messages
+3. Verify Node.js version: `node --version` (should be 16+)
+
+## Next Steps
+
+Once setup completes:
+
+1. **Start Theia**:
    ```powershell
-   cd frontend/frontend/theia-ide-base
-   yarn clean
-   rm -rf node_modules
-   yarn install
+   cd theia-fresh\examples\browser
+   npm.cmd run start:watch
    ```
 
-2. **Check for Missing Build Steps**:
-   - Verify `postinstall` scripts ran correctly
-   - Check if `compute-references` completed
+2. **Open Browser**:
+   - Navigate to: http://localhost:3000
+   - Theia IDE should load
 
-3. **Fix Type Issues**:
-   - May need to update `@types/express` versions
-   - Check package.json overrides
+3. **Test ADK Features**:
+   - View → ADK IDE → HIA Chat
+   - View → ADK IDE → Agent Status
+   - View → ADK IDE → Code Execution
 
-### Option 2: Use Pre-built Theia
+## Current Progress
 
-Instead of building from source, consider:
-- Using Theia Docker image
-- Using a pre-built Theia distribution
-- Using Theia Cloud IDE
+- ⏳ **Dependencies**: Installing...
+- ⏳ **Build**: Waiting...
+- ⏳ **Port 3000**: Not ready yet
 
-### Option 3: Custom Theia Setup
-
-If you need a custom Theia setup:
-- Start with a minimal Theia template
-- Add ADK IDE extensions incrementally
-- Build and test each step
+**Estimated Time Remaining**: 5-10 minutes for dependencies + 2-5 minutes for rebuild
 
 ---
 
-## 📋 Current Directory Structure
-
-```
-frontend/
-└── frontend/              # Nested directory
-    └── theia-ide-base/    # Theia monorepo
-        ├── packages/       # Theia packages
-        ├── examples/       # Example applications
-        └── node_modules/   # Dependencies installed
-```
-
-**Note**: The nested `frontend/frontend/` structure is unusual and may contribute to path resolution issues.
-
----
-
-## 🎯 Next Steps
-
-1. **Investigate the build errors** in detail
-2. **Fix TypeScript configuration** and module resolution
-3. **Resolve dependency conflicts** (especially @types/express)
-4. **Try alternative build approach** if needed
-
----
-
-## 📚 Resources
-
-- **Theia Documentation**: https://theia-ide.org/docs/
-- **Theia GitHub**: https://github.com/eclipse-theia/theia
-- **Build Issues**: Check Theia GitHub issues for similar problems
-
----
-
-## ⚠️ Status Summary
-
-- **Dependencies**: ✅ Installed
-- **Compilation**: ❌ Failing (TypeScript errors)
-- **Build**: ❌ Cannot proceed until compilation errors fixed
-- **Application**: ❌ Not built yet
-
----
-
-**Last Updated**: 2025-11-05
-
+**Status**: Setup in progress. Run `.\install-and-rebuild-theia.ps1` to complete the process.
