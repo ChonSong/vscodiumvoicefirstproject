@@ -1,5 +1,7 @@
 # ADK IDE Project - Git Ignore
-
+gitproject.py
+# Virtualenv
+.venv/
 # Build artifacts and distributions
 build/
 dist/
@@ -29,6 +31,7 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 ENV/
 env.bak/
 venv.bak/
