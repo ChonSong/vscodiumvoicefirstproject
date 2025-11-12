@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import os
 import re
 import asyncio
@@ -13,7 +13,7 @@ class CodeExecutionAgent(ADKIDEAgent):
     a not_implemented status.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, artifact_service: Optional["ArtifactService"] = None) -> None:
         super().__init__(name="code_execution_agent", description="Executes code in a sandboxed environment")
         self._executor = None
         # Lazy init at first call to avoid import-time failures
@@ -25,6 +25,7 @@ class CodeExecutionAgent(ADKIDEAgent):
         self._memory_limit: str = os.environ.get("ADK_EXECUTE_MEMORY", "4GB")
         default_denylist = [r"\bimport\s+os\b", r"\bsubprocess\b", r"\bsocket\b", r"\bshutil\.rmtree\b"]
         self.denylist_patterns: List[re.Pattern[str]] = [re.compile(p, re.IGNORECASE) for p in default_denylist]
+        self.artifact_service = artifact_service
 
     async def run(self, request: Dict[str, Any]) -> Dict[str, Any]:
         code = request.get("code")

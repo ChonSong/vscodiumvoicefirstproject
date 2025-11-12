@@ -23,7 +23,7 @@ class LoopAgent(ADKIDEAgent):
 
         if os.environ.get("ADK_ENABLED", "false").lower() == "true":
             try:  # pragma: no cover
-                from google.adk import LoopAgent as ADKLoopAgent  # type: ignore
+                from google.adk.agents import LoopAgent as ADKLoopAgent  # type: ignore
 
                 # Convert our sub-agents to ADK agents if they're ADK-enabled
                 adk_sub_agents = []
@@ -170,7 +170,7 @@ class SequentialAgent(ADKIDEAgent):
 
         if os.environ.get("ADK_ENABLED", "false").lower() == "true":
             try:  # pragma: no cover
-                from google.adk import SequentialAgent as ADKSequentialAgent  # type: ignore
+                from google.adk.agents import SequentialAgent as ADKSequentialAgent  # type: ignore
 
                 adk_sub_agents = []
                 for agent in sub_agents:
@@ -249,7 +249,7 @@ class ParallelAgent(ADKIDEAgent):
 
         if os.environ.get("ADK_ENABLED", "false").lower() == "true":
             try:  # pragma: no cover
-                from google.adk import ParallelAgent as ADKParallelAgent  # type: ignore
+                from google.adk.agents import ParallelAgent as ADKParallelAgent  # type: ignore
 
                 adk_sub_agents = []
                 for agent in sub_agents:

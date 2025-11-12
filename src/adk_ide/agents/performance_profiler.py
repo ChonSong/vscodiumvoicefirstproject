@@ -29,7 +29,7 @@ class PerformanceProfilerAgent(ADKIDEAgent):
 
         if os.environ.get("ADK_ENABLED", "false").lower() == "true":
             try:  # pragma: no cover
-                from google.adk import LlmAgent  # type: ignore
+                from google.adk.agents import LlmAgent  # type: ignore
 
                 tools = []
                 if code_executor:
@@ -47,8 +47,12 @@ class PerformanceProfilerAgent(ADKIDEAgent):
                     except Exception:
                         pass
 
+                # Get model from environment or use default
+                model = os.environ.get("ADK_MODEL", os.environ.get("GOOGLE_MODEL", "gemini-2.5-flash"))
+                
                 self._llm_agent = LlmAgent(
                     name="PerformanceProfilerAgent",
+                    model=model,  # Required: specify the LLM model
                     description="Runtime analysis, bottleneck identification, and optimization recommendations. Use profile_code tool to analyze code performance.",
                     tools=tools if tools else None,  # type: ignore[arg-type]
                     instruction="You are a performance profiling specialist. Analyze code execution to identify bottlenecks, memory leaks, CPU-intensive operations, and provide optimization recommendations. Use the profile_code tool to gather performance metrics.",

@@ -155,11 +155,13 @@ For programmatic use within Python:
 from src.adk_ide.agents.cea import CodeExecutionAgent
 from src.adk_ide.agents.da import DevelopingAgent
 from src.adk_ide.agents.hia import HumanInteractionAgent
+from src.adk_ide.services.artifact import ArtifactService
 import asyncio
 
 # Initialize agents
-code_executor = CodeExecutionAgent()
-developing_agent = DevelopingAgent(code_executor=code_executor)
+artifact_service = ArtifactService(environment="development")
+code_executor = CodeExecutionAgent(artifact_service=artifact_service)
+developing_agent = DevelopingAgent(code_executor=code_executor, artifact_service=artifact_service)
 hia = HumanInteractionAgent(
     code_executor=code_executor,
     developing_agent=developing_agent
@@ -501,6 +503,7 @@ Once the server is running, visit:
 ---
 
 **Last Updated**: 2025-11-05
+
 
 
 

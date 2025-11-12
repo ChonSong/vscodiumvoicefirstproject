@@ -18,6 +18,7 @@ class ArtifactService:
     def __init__(self, environment: str = "development") -> None:
         self.environment = environment
         self._adk_service: Optional[object] = None
+        self._local_store: Dict[str, Dict[str, Dict[str, Any]]] = {}
         
         if os.environ.get("ADK_ENABLED", "false").lower() == "true":
             with suppress(Exception):  # pragma: no cover
@@ -73,7 +74,13 @@ class ArtifactService:
             except Exception as exc:
                 return {"status": "error", "error": str(exc)}
 
-        # Fallback: local storage simulation
+        # Fallback: local in-memory storage
+        session_store = self._local_store.setdefault(session_id, {})
+        session_store[artifact_name] = {
+            "content": content,
+            "metadata": metadata or {},
+            "version": 1,
+        }
         artifact_id = f"{session_id}/{artifact_name}"
         return {
             "status": "success",
@@ -120,7 +127,17 @@ class ArtifactService:
             except Exception as exc:
                 return {"status": "error", "error": str(exc)}
 
-        # Fallback: return empty content
+        # Fallback: return from in-memory store
+        session_store = self._local_store.get(session_id, {})
+        artifact = session_store.get(artifact_name)
+        if artifact:
+            return {
+                "status": "success",
+                "content": artifact.get("content", b""),
+                "metadata": artifact.get("metadata", {}),
+                "version": artifact.get("version", 1),
+                "provider": "local",
+            }
         return {
             "status": "not_found",
             "content": b"",
@@ -152,7 +169,16 @@ class ArtifactService:
             except Exception as exc:
                 return {"status": "error", "error": str(exc)}
 
-        return {"status": "success", "artifacts": [], "provider": "local"}
+        session_store = self._local_store.get(session_id, {})
+        artifacts = [
+            {
+                "name": name,
+                "metadata": data.get("metadata", {}),
+                "version": data.get("version", 1),
+            }
+            for name, data in session_store.items()
+        ]
+        return {"status": "success", "artifacts": artifacts, "provider": "local"}
 
 
 class ToolContextArtifactMethods:

@@ -3,6 +3,7 @@ from typing import Dict, Any, Optional
 import json
 import asyncio
 import shlex
+import time
 from fastapi import WebSocket, WebSocketDisconnect
 import logging
 import pathlib
@@ -58,13 +59,14 @@ class WebSocketManager:
     async def handle_agent_request(self, websocket: WebSocket, request: Dict[str, Any]):
         """Handle an agent request via WebSocket with streaming responses."""
         request_type = request.get("type", "orchestrate")
-        request_id = request.get("request_id", "unknown")
+        # Support both "id" (from frontend) and "request_id" (legacy)
+        request_id = request.get("id") or request.get("request_id", f"req-{int(time.time() * 1000)}")
         
         try:
             # Send initial acknowledgment
             await self.send_personal_message({
+                "id": request_id,  # Use "id" to match frontend expectation
                 "type": "ack",
-                "request_id": request_id,
                 "status": "processing",
             }, websocket)
 
@@ -72,25 +74,56 @@ class WebSocketManager:
             if request_type == "orchestrate":
                 # Stream progress updates
                 await self.send_personal_message({
+                    "id": request_id,
                     "type": "progress",
-                    "request_id": request_id,
                     "message": "Routing to Human Interaction Agent...",
                 }, websocket)
                 
-                result = await self.hia.run(request.get("payload", {}))
+                # Extract payload - support both "payload" and direct request fields
+                payload = request.get("payload", {})
+                if not payload and request_type == "orchestrate":
+                    # If no payload, use the request itself (minus type and id)
+                    payload = {k: v for k, v in request.items() if k not in ["type", "id", "request_id"]}
+                    # If message is at top level, use it
+                    if "message" in request:
+                        payload["message"] = request["message"]
+                    if "user_id" in request:
+                        payload["user_id"] = request["user_id"]
+                    if "session_id" in request:
+                        payload["session_id"] = request["session_id"]
+                
+                result = await self.hia.run(payload)
                 
                 await self.send_personal_message({
+                    "id": request_id,
                     "type": "progress",
-                    "request_id": request_id,
                     "message": "Processing complete",
                 }, websocket)
                 
-                await self.send_personal_message({
-                    "type": "result",
-                    "request_id": request_id,
-                    "status": "success",
-                    "data": result,
-                }, websocket)
+                # Send result in format expected by frontend
+                # Frontend expects: { id, status, response, ... }
+                response_message = {
+                    "id": request_id,
+                    "status": result.get("status", "success"),
+                }
+                
+                # Extract response text from result
+                if "response" in result:
+                    response_message["response"] = result["response"]
+                elif "error" in result:
+                    response_message["error"] = result["error"]
+                elif "agent" in result:
+                    response_message["agent"] = result["agent"]
+                    # Try to extract any response-like fields
+                    for key in ["response", "text", "message", "content", "output"]:
+                        if key in result:
+                            response_message["response"] = result[key]
+                            break
+                
+                # Include the full result in data field for debugging
+                response_message["data"] = result
+                
+                await self.send_personal_message(response_message, websocket)
 
             elif request_type == "execute_code":
                 await self.send_personal_message({

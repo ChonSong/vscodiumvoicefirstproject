@@ -22,7 +22,7 @@ class MultiDeveloperAgent(ADKIDEAgent):
 
         if os.environ.get("ADK_ENABLED", "false").lower() == "true":
             try:  # pragma: no cover
-                from google.adk import LlmAgent  # type: ignore
+                from google.adk.agents import LlmAgent  # type: ignore
 
                 self._llm_agent = LlmAgent(
                     name="MultiDeveloperAgent",
@@ -105,7 +105,7 @@ class SecurityScannerAgent(ADKIDEAgent):
 
         if os.environ.get("ADK_ENABLED", "false").lower() == "true":
             try:  # pragma: no cover
-                from google.adk import LlmAgent  # type: ignore
+                from google.adk.agents import LlmAgent  # type: ignore
 
                 self._llm_agent = LlmAgent(
                     name="SecurityScannerAgent",
@@ -166,7 +166,7 @@ class ComplianceMonitorAgent(ADKIDEAgent):
 
         if os.environ.get("ADK_ENABLED", "false").lower() == "true":
             try:  # pragma: no cover
-                from google.adk import LlmAgent  # type: ignore
+                from google.adk.agents import LlmAgent  # type: ignore
 
                 self._llm_agent = LlmAgent(
                     name="ComplianceMonitorAgent",

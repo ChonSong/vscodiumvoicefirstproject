@@ -23,3 +23,8 @@ httpx
 pytest
 pytest-asyncio
 
+# HTML processing
+htmlbeautifier>=1.0.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
