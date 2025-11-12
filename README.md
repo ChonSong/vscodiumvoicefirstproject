@@ -11,6 +11,7 @@ This repository contains the implementation of an advanced AI-powered Integrated
 - [Getting Started](#getting-started)
 - [Development Setup](#development-setup)
 - [Key Features](#key-features)
+- [Voice-First Features](#voice-first-features)
 - [Implementation Requirements](#implementation-requirements)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
@@ -46,16 +47,17 @@ The ADK IDE is built on a sophisticated multi-agent system:
 └────────┘    └─────────────┘    └───────────┘
 ```
 
-For detailed architecture information, see [ADK Implementation Requirements](Context/adk%20implementation%20requirements.txt).
+For detailed architecture information, see [ADK Implementation Requirements](docs/adk/adk%20implementation%20requirements.txt).
 
 ## Getting Started
 
 ### Prerequisites
 
 - **Python 3.8+** with pip
-- **Node.js 16+** with npm
+- **Node.js 16+** with yarn (for Theia)
 - **Google API Access** for ADK integration
 - **Git** for version control
+- **Docker** (optional, for easy deployment)
 
 ### Quick Setup
 
@@ -66,7 +68,7 @@ For detailed architecture information, see [ADK Implementation Requirements](Con
    ```
 
 2. **Configure Environment**
-   - Note: A `.env` file already exists in the repository root with the following variables (it's private/untracked and not visible here):
+   - A `.env` file exists in the repository root with Google Cloud variables (untracked):
      - `GOOGLE_CLOUD_PROJECT`
      - `GOOGLE_APPLICATION_CREDENTIALS`
      - `GOOGLE_API_KEY`
@@ -75,18 +77,27 @@ For detailed architecture information, see [ADK Implementation Requirements](Con
    pip install -r requirements.txt
    ```
 
-3. **Run the Service**
+3. **Docker Setup (Recommended)**
+   - Build and run the full backend stack
+   ```bash
+   docker-compose up --build
+   ```
+   - Backend API available at http://localhost:8000
+   - Health check: curl http://localhost:8000/health
+
+4. **Run Backend Directly**
    ```bash
    uvicorn main:app --reload --host 0.0.0.0 --port 8000
    ```
 
-4. **Run the Frontend (Optional)**
+5. **Run Frontend (Theia IDE)**
    ```bash
-   cd frontend
-   npm install
-   npm start
+   cd theia-fresh
+   yarn install
+   yarn start
    ```
-   The frontend will be available at http://localhost:3000
+   - Theia IDE available at http://localhost:3000
+   - Integrates with backend at http://localhost:8000
 
 ## Development Setup
 
@@ -157,7 +168,7 @@ develop_agent = LlmAgent(
 - Intelligent error handling and recovery
 
 ### 🌐 Web-Based Interface
-- Modern React frontend with Material-UI components
+- Eclipse Theia IDE with ADK extensions
 - Monaco Editor with syntax highlighting and code completion
 - Real-time WebSocket communication for agent interactions
 - Agent status monitoring and workflow visualization
@@ -170,9 +181,18 @@ develop_agent = LlmAgent(
 - **Session Management**: ADK SessionService integration with JWT fallback
 - **Observability**: OpenTelemetry tracing and Prometheus metrics
 
+## Voice-First Features
+
+The ADK IDE supports voice-first interactions through Google's ADK audio modalities:
+- **Speech-to-Text**: Real-time transcription using ADK Runner.run_live()
+- **Text-to-Speech**: Audio responses with natural voice synthesis
+- **Bidi-Streaming**: Supports interruptions for fluid voice conversations
+- **Voice Commands**: Interact with agents via spoken commands for coding assistance
+- Access voice interface at /voice endpoint after starting the service
+
 ## Implementation Requirements
 
-This project implements the comprehensive requirements outlined in [ADK Implementation Requirements](Context/adk%20implementation%20requirements.txt), including:
+This project implements the comprehensive requirements outlined in [ADK Implementation Requirements](docs/adk/adk%20implementation%20requirements.txt), including:
 
 - Multi-agent system architecture with HIA and DA roles
 - Secure code execution using BuiltInCodeExecutor
@@ -183,16 +203,16 @@ This project implements the comprehensive requirements outlined in [ADK Implemen
 ## Documentation
 
 ### Core Documentation
-- [ADK Implementation Requirements](Context/adk%20implementation%20requirements.txt) - Complete technical specification
-- [API Reference](Context/API_REFERENCE.md) - Comprehensive API documentation
+- [ADK Implementation Requirements](docs/adk/adk%20implementation%20requirements.txt) - Complete technical specification
+- [API Reference](docs/adk/API_REFERENCE.md) - Comprehensive API documentation
 - [Development Process](docs/development/DEVELOPMENT_PROCESS.md) - Development workflow and guidelines
 
 ### Guides and References
-- [Authentication Guide](Context/ADK_AUTHENTICATION_GUIDE.md)
-- [Installation & Setup](Context/ADK_INSTALLATION_SETUP_GUIDE.md)
-- [Integration Reference](Context/ADK_INTEGRATION_REFERENCE.md)
-- [Tools & Integrations](Context/ADK_TOOLS_INTEGRATIONS_GUIDE.md)
-- [Deployment Guide](Context/ADK_DEPLOYMENT_PRODUCTION_GUIDE.md)
+- [Authentication Guide](docs/adk/ADK_AUTHENTICATION_GUIDE.md)
+- [Installation & Setup](docs/adk/ADK_INSTALLATION_SETUP_GUIDE.md)
+- [Integration Reference](docs/adk/ADK_INTEGRATION_REFERENCE.md)
+- [Tools & Integrations](docs/adk/ADK_TOOLS_INTEGRATIONS_GUIDE.md)
+- [Deployment Guide](docs/adk/ADK_DEPLOYMENT_PRODUCTION_GUIDE.md)
 
 ## Contributing
 
@@ -204,7 +224,7 @@ We welcome contributions to the ADK IDE project! Please see our development docu
 - Documentation standards
 
 ### Development Process
-1. Review [Implementation Requirements](Context/adk%20implementation%20requirements.txt)
+1. Review [Implementation Requirements](docs/adk/adk%20implementation%20requirements.txt)
 2. Follow [Development Process](docs/development/DEVELOPMENT_PROCESS.md) guidelines
 3. Ensure all safety and security requirements are met
 4. Submit pull requests with comprehensive testing
@@ -226,7 +246,3 @@ ADK IDE supports development on:
 ## License
 
 [MIT](LICENSE)
-
----
-
-**Note**: This project represents a complete transformation from VSCodium to an original ADK-powered IDE implementation. All legacy VSCodium references have been removed and replaced with ADK IDE-specific content.

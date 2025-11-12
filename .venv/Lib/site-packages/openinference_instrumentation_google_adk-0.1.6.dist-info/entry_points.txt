@@ -1,0 +1,5 @@
+[openinference_instrumentor]
+google_adk = openinference.instrumentation.google_adk:GoogleADKInstrumentor
+
+[opentelemetry_instrumentor]
+google_adk = openinference.instrumentation.google_adk:GoogleADKInstrumentor

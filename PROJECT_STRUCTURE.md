@@ -1,73 +1,81 @@
 # ADK IDE Project Structure
 
-This repository has been stripped to contain only the essential resources for ADK IDE implementation.
+This repository contains the clean, organized implementation of the ADK IDE after overhaul.
 
 ## Directory Structure
 
 ```
 adk-ide/
-├── Context/                    # ADK Implementation Documentation
-│   ├── adk implementation requirements.txt
-│   ├── ADK_AUTHENTICATION_GUIDE.md
-│   ├── ADK_COMPREHENSIVE_DOCUMENTATION.md
-│   ├── ADK_DEPLOYMENT_PRODUCTION_GUIDE.md
-│   ├── ADK_INSTALLATION_SETUP_GUIDE.md
-│   ├── ADK_INTEGRATION_REFERENCE.md
-│   ├── ADK_QUICK_REFERENCE.md
-│   ├── ADK_TOOLS_INTEGRATIONS_GUIDE.md
-│   ├── API_REFERENCE.md
-│   └── README.md
-├── .kiro/                      # Kiro IDE Configuration
-│   └── hooks/                  # Development Automation Hooks
-│       ├── development_recorder.py
-│       ├── file_change_hook.py
-│       └── documentation_generator.py
-├── docs/                       # Generated Documentation
-│   └── development/            # Development Process Documentation
-├── logs/                       # Development Activity Logs
-│   └── development/            # Automated Development Tracking
-├── .editorconfig              # Editor Configuration
-├── .gitignore                 # Git Ignore Rules
-├── LICENSE                    # MIT License
-├── README.md                  # Project Overview
-└── PROJECT_STRUCTURE.md       # This File
+├── src/                          # Backend Python code
+│   └── adk_ide/                  # Core ADK IDE implementation
+│       ├── agents/               # Multi-agent system
+│       ├── services/             # Session, artifact, etc.
+│       ├── tools/                # ADK tools
+│       ├── security/             # Security callbacks
+│       ├── websocket/            # WebSocket handlers
+│       └── observability/        # Tracing and metrics
+├── theia-fresh/                  # Frontend: Eclipse Theia IDE with ADK integration
+│   ├── packages/adk-ide/         # ADK-specific Theia extensions
+│   ├── packages/core/            # Theia core
+│   └── ...                       # Other Theia packages and configs
+├── docs/                         # Documentation
+│   ├── adk/                      # ADK-specific guides and references
+│   │   ├── adk implementation requirements.txt
+│   │   ├── ADK_*.md              # Various ADK guides
+│   │   └── API_REFERENCE.md
+│   └── development/              # Development process docs
+│       ├── DEVELOPMENT_PROCESS.md
+│       ├── MILESTONES.md
+│       └── PROJECT_TRANSFORMATION_ANALYSIS.md
+├── tests/                        # Test suite
+│   ├── test_api.py
+│   ├── test_ide_components.py
+│   ├── test_tools.py
+│   └── test_workflow_agents.py
+├── main.py                       # FastAPI entry point
+├── requirements.txt              # Python dependencies
+├── Dockerfile                    # Docker configuration
+├── docker-compose.yml            # Docker Compose setup
+├── .env                          # Environment variables (untracked)
+├── README.md                     # Project overview
+├── LICENSE                       # MIT License
+└── PROJECT_STRUCTURE.md          # This file
 ```
 
-## Key Components Retained
+## Key Components
 
-### 1. Context Directory
-Contains all ADK implementation requirements and comprehensive documentation:
-- Technical specifications for multi-agent architecture
-- Security and execution environment requirements
-- IDE component specifications
-- Integration guides and API references
+### 1. Backend (src/adk_ide/)
+- Multi-agent architecture using Google ADK
+- FastAPI-based API with WebSocket support
+- Secure code execution and session management
+- Observability with OpenTelemetry and Prometheus
 
-### 2. Kiro Hooks
-Automated development assistance and tracking:
-- **development_recorder.py**: Core development activity recording and progress tracking
-- **file_change_hook.py**: Automatic file modification event handling
-- **documentation_generator.py**: Automated documentation generation
+### 2. Frontend (theia-fresh/)
+- Eclipse Theia IDE framework
+- Integrated ADK agents for AI-assisted development
+- VS Code extension compatibility
+- Modern web-based IDE with voice-first capabilities via ADK
 
-### 3. Development Documentation
-- **docs/development/**: Generated development process documentation
-- **logs/development/**: Automated tracking of all development activities
+### 3. Documentation (docs/)
+- **docs/adk/**: Comprehensive ADK guides, API reference, implementation requirements
+- **docs/development/**: Development workflows, milestones, transformation analysis
+
+### 4. Testing (tests/)
+- Unit and integration tests for API, agents, tools, and workflows
 
 ## Removed Components
-
-All VSCodium-specific components have been removed:
-- Build scripts and configuration files
-- VSCodium release and deployment infrastructure
-- VSCodium-specific GitHub workflows
-- VSCodium product configuration
-- VSCodium patches and upstream management
-- VSCodium stores and distribution files
+- Temporary setup scripts and fix guides (PS1 files)
+- Redundant documentation and progress reports
+- Duplicate frontend directories
+- __pycache__ artifacts
 
 ## Next Steps
+1. **Review Requirements**: Start with `docs/adk/adk implementation requirements.txt`
+2. **Environment Setup**: Ensure `.env` has Google Cloud credentials
+3. **Backend**: `pip install -r requirements.txt` then `uvicorn main:app --reload`
+4. **Docker**: `docker-compose up --build` for full stack
+5. **Frontend (Theia)**: `cd theia-fresh; yarn install; yarn start` for IDE
+6. **Voice Integration**: Access via ADK audio modalities in the running service
+7. **Testing**: `pytest tests/`
 
-1. **Review Requirements**: Start with `Context/adk implementation requirements.txt`
-2. **Prepare Environment**: Create a `.env` in the repo root with `GOOGLE_CLOUD_PROJECT`, `GOOGLE_APPLICATION_CREDENTIALS`, and `GOOGLE_API_KEY`
-3. **Setup Development Environment**: Follow guides in the Context directory
-4. **Begin Implementation**: The Kiro hooks will automatically track progress
-5. **Monitor Progress**: Check generated reports in `docs/development/`
-
-This streamlined structure focuses entirely on ADK IDE implementation while maintaining comprehensive documentation and automated development tracking.
+This structure focuses on the core ADK IDE functionality with clean separation of backend, frontend, docs, and tests.
